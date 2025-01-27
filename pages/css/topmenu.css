@@ -1,0 +1,137 @@
+/* Menu fixo */
+header {
+    background-color: #0e1629;
+    color: white;
+    padding: 17px 30px 10px 30px;
+    position: fixed;
+    width: 100%;
+    height: auto;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid #1d2d54;
+    margin-bottom: 0;
+}
+
+.menu-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu-left img {
+    height: 30px;
+}
+
+/* Centraliza os botões específicos */
+.menu-center {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-grow: 1;
+}
+
+.menu-right {
+    display: flex;
+    gap: 15px;
+}
+
+/* Menu responsivo - escondido no desktop */
+.menu-responsive {
+    display: flex !important;
+    flex-direction: column;
+    position: absolute !important;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background-color: #0e1629;
+    padding: 0;
+    max-height: 0; /* Altura inicial de 0 para ocultar */
+    overflow: hidden; /* Esconde o conteúdo enquanto está fechado */
+    transition: max-height 0.4s ease-out, padding 0.4s ease-out; /* Transição suave */
+}
+
+/* Exibe o menu com animação */
+.menu-responsive.active {
+    padding: 10px 0;
+    max-height: 300px; /* Altura suficiente para exibir o conteúdo */
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center;
+    align-items: center;
+}
+
+.menu-responsive .dropdown-menu {
+    z-index: 10; /* Garante que o dropdown fique acima dos outros elementos no mobile */
+}
+
+/* Ícone de menu (hambúrguer) oculto no desktop */
+.menu-toggle {
+    display: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    display: none; /* Oculta o menu inicialmente */
+    opacity: 0;
+}
+
+/* Mostra o dropdown quando o mouse passa sobre ele */
+.dropdown:hover .dropdown-menu {
+    display: block; /* Exibe o menu */
+    transition: opacity 0.3s ease; /* Animação suave */
+    opacity: 1; /* Torna visível */
+}
+
+.menu-right .dropdown-menu {
+    right: 0; /* Alinha o dropdown com a borda direita do botão "Entrar" */
+    left: auto; /* Cancela o alinhamento à esquerda padrão */
+} 
+.position-relative {
+    position: relative;
+}
+
+.search-input {
+    padding-left: 30px !important; /* Espaço para a lupa */
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    pointer-events: none; /* Impede que o ícone bloqueie o clique no input */
+    transition: opacity 0.2s ease;
+}
+
+.hidden-icon {
+    opacity: 0; /* Faz o ícone desaparecer gradualmente */
+}
+
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .menu-center, .menu-right {
+        display: none;
+    }
+
+    /* Mostra o menu responsivo e o ícone de hambúrguer apenas no mobile */
+    .menu-toggle {
+        display: block;
+        padding-right: 4%;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        width: 100%; /* Garante que o menu ocupe toda a largura da tela */
+        left: 0;
+        right: 0; /* Centraliza o menu no mobile */
+        margin: 0; /* Remove espaçamento extra */
+    }
+}
+
+a {
+    color: rgb(255 255 255)!important;
+    text-decoration: none!important;
+}

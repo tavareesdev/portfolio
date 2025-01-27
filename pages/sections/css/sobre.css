@@ -1,0 +1,70 @@
+.panel {
+    background: linear-gradient(307deg, #375580 -30%, #121f31, #0a1524); /* Fundo claro */
+    border: 1px solid #ccc; /* Borda */
+    border-radius: 8px; /* Cantos arredondados */
+    padding: 20px; /* Espaçamento interno */
+    margin-top: 15px; /* Espaçamento superior */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    width: 83%;
+}
+
+.content {
+    display: flex;
+    flex-wrap: wrap; /* Para responsividade */
+    justify-content: space-between; /* Espaçamento entre texto e imagem */
+    align-items: center;
+    gap: 20px; /* Espaçamento entre os elementos */
+}
+
+.text {
+    flex: 1; /* Ocupa espaço proporcional */
+    max-width: 56%;
+}
+
+.text p {
+    margin-bottom: 10px;
+    text-align: left; /* Alinha o texto à esquerda */
+    font-size: 1.2em;
+}
+
+.image {
+    flex: 0 0 347px;
+    display: flex;
+    justify-content: center; /* Centraliza a imagem horizontalmente */
+    align-items: center; /* Centraliza a imagem verticalmente */
+}
+
+.image img {
+    width: 100%; /* Imagem responsiva */
+}
+
+@media (max-width: 768px) {
+    .content {
+        flex-direction: column; /* Empilha os elementos verticalmente */
+        align-items: center; /* Centraliza os elementos na tela */
+    }
+
+    .image {
+        flex: unset; /* Remove restrição de largura fixa */
+        width: 100%; /* Faz a imagem ocupar a largura total do container */
+        max-width: 300px; /* Limita o tamanho máximo da imagem */
+        margin-bottom: 20px; /* Espaçamento entre imagem e texto */
+    }
+
+    .image img {
+        width: 100%; /* Imagem responsiva */
+        height: auto; /* Mantém proporção */
+    }
+
+    .text {
+        flex: unset; /* Remove restrição de largura fixa */
+        max-width: 100%; /* Faz o texto ocupar a largura total */
+        text-align: center; /* Centraliza o texto */
+    }
+
+    .text p {
+        text-align: center; /* Centraliza cada parágrafo */
+        margin-bottom: 15px; /* Adiciona espaço entre parágrafos */
+        font-size: 1em; /* Ajusta o tamanho da fonte */
+    }
+}
