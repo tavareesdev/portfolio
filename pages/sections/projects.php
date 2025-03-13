@@ -17,7 +17,7 @@
             <a class="card2-image" href="https://sejanow.com.br" target="_blank" style="background-image: url(<?php echo $baseURL;?>/img/sejanow.png);" data-image-full="<?php echo $baseURL;?>/img/sejanow.png">
                 <img src="<?php echo $baseURL;?>/img/sejanow.png" alt="Psychopomp" />
             </a>
-            <a class="card2-description" href="" target="_blank">
+            <a class="card2-description" href="https://sejanow.com.br" target="_blank">
                 <h2>Seja Now - Home</h2>
             </a>
         </li>

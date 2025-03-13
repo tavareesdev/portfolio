@@ -21,7 +21,9 @@
 
         <?php include 'sections/services.php' ?>
 
-        <?php include 'sections/skills.php' ?>        
+        <?php include 'sections/skills.php' ?>  
+
+        <?php include 'sections/footer.php' ?>   
     </body>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
