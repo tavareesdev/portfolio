@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Gabriel Tavares · Dev Full-Stack</title>
   <meta name="description" content="Portfólio de Gabriel Tavares, Desenvolvedor Full-Stack Júnior especializado em sistemas web, arquitetura de software e automação.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1274,19 +1277,20 @@
     }
 
     /* ============================================================
-       MODAL — Carregar README.md de cada projeto via fetch
-       ============================================================ */
+      MODAL — Carregar README.md de cada projeto via fetch
+      ============================================================ */
     var modalOverlay = document.getElementById('project-modal');
     var modalTitle = document.getElementById('modal-title');
     var modalBody = document.getElementById('modal-body');
     var modalClose = document.getElementById('modal-close');
 
-    // Cache para os READMEs já carregados
+    // Cache para os READMEs já carregados (apenas na sessão atual)
     var readmeCache = {};
+    var cacheVersion = Date.now(); // Versão única para esta sessão
 
     // Função para carregar o README
     function loadReadme(projectId) {
-      // Se já estiver em cache, usa
+      // Se já estiver em cache NA SESSÃO ATUAL, usa
       if (readmeCache[projectId]) {
         renderReadme(projectId, readmeCache[projectId]);
         return;
@@ -1300,8 +1304,19 @@
         </div>
       `;
 
-      // Faz o fetch do arquivo .md
-      fetch(`docs/readmes/${projectId}.md`)
+      // Adiciona timestamp para evitar cache
+      var timestamp = new Date().getTime();
+      var url = `docs/readmes/${projectId}.md?t=${timestamp}`;
+
+      // Faz o fetch do arquivo .md com headers anti-cache
+      fetch(url, {
+        cache: 'no-store', // Força o navegador a não usar cache
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      })
         .then(function(response) {
           if (!response.ok) {
             throw new Error('README não encontrado');
@@ -1309,7 +1324,7 @@
           return response.text();
         })
         .then(function(markdown) {
-          // Salva no cache
+          // Salva no cache da sessão
           readmeCache[projectId] = markdown;
           renderReadme(projectId, markdown);
         })
@@ -1320,12 +1335,74 @@
               <i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; margin-bottom: 12px; display: block;"></i>
               <p>Erro ao carregar o README do projeto.</p>
               <p style="font-size: 0.85rem; color: var(--text-faint); margin-top: 8px;">
-                Verifique se o arquivo <code>readmes/${projectId}.md</code> existe.
+                Verifique se o arquivo <code>docs/readmes/${projectId}.md</code> existe.
               </p>
+              <button onclick="location.reload()" style="margin-top: 16px; padding: 8px 20px; border-radius: 999px; border: 1px solid var(--accent); background: transparent; color: var(--accent); cursor: pointer;">
+                <i class="fa-solid fa-rotate"></i> Recarregar página
+              </button>
             </div>
           `;
         });
     }
+
+    // Função para renderizar o Markdown
+    function renderReadme(projectId, markdown) {
+      // Define o título baseado no projeto
+      var titles = {
+        portfolio: '📖 Meu Portfólio',
+        sejanow: '📖 Seja Now — Home Page',
+        zennix: '📖 Zennix'
+      };
+      modalTitle.textContent = titles[projectId] || '📖 Sobre o Projeto';
+
+      try {
+        // Configura o marked para ser seguro
+        var html = marked.parse(markdown);
+        modalBody.innerHTML = html;
+      } catch (e) {
+        console.error('Erro ao renderizar Markdown:', e);
+        modalBody.innerHTML = '<p style="color: var(--accent-warm);">Erro ao renderizar o conteúdo. Por favor, tente novamente.</p>';
+      }
+    }
+
+    // Abrir modal
+    function openModal(projectId) {
+      modalOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      loadReadme(projectId);
+    }
+
+    // Fechar modal
+    function closeModal() {
+      modalOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // Event listeners para botões "Sobre"
+    document.querySelectorAll('.project-link-about').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var project = this.getAttribute('data-project');
+        openModal(project);
+      });
+    });
+
+    // Fechar modal com o X
+    modalClose.addEventListener('click', closeModal);
+
+    // Fechar modal clicando fora do conteúdo
+    modalOverlay.addEventListener('click', function(e) {
+      if (e.target === modalOverlay) {
+        closeModal();
+      }
+    });
+
+    // Fechar modal com a tecla ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+        closeModal();
+      }
+    });
 
     // Função para renderizar o Markdown
     function renderReadme(projectId, markdown) {
