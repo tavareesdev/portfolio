@@ -14,7 +14,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <!-- Marked.js para renderizar Markdown -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <link rel="icon" type="image/png" href="logo.png">
+  <!-- PDF.js para renderizar PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <link rel="icon" type="image/png" href="images/logo.png">
   <style>
     /* ============================================================
        00. DESIGN TOKENS — "Blueprint de sistema"
@@ -421,6 +423,14 @@
       transition: background .3s ease, transform .3s ease;
     }
     .project-link:hover{ background: rgba(255,255,255,.15); transform: translateX(3px); }
+    .project-link-pdf{
+      display:inline-flex; align-items:center; gap:8px; font-size:.85rem; font-weight:600; color:#fff;
+      width: max-content; padding: 8px 16px; border-radius:999px; border:1px solid rgba(255,255,255,.3);
+      background: rgba(255,184,77,0.2);
+      transition: background .3s ease, transform .3s ease;
+      cursor: pointer;
+    }
+    .project-link-pdf:hover{ background: rgba(255,184,77,0.4); transform: translateX(3px); }
     .project-link-about{
       display:inline-flex; align-items:center; gap:8px; font-size:.85rem; font-weight:600; color:#fff;
       width: max-content; padding: 8px 16px; border-radius:999px; border:1px solid rgba(255,255,255,.3);
@@ -574,9 +584,99 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+    /* Estilos para o PDF renderizado com PDF.js */
+    .modal-content .pdf-render {
+      width: 100%;
+      max-height: 70vh;
+      overflow-y: auto;
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      border: 1px solid var(--border);
+    }
+    .modal-content .pdf-render canvas {
+      display: block;
+      margin: 0 auto 12px auto;
+      max-width: 100%;
+      height: auto !important;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      background: white;
+    }
+    .modal-content .pdf-render .pdf-page {
+      margin-bottom: 16px;
+    }
+    .modal-content .pdf-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .modal-content .pdf-actions a,
+    .modal-content .pdf-actions button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: .9rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      transition: all .3s ease;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .modal-content .pdf-actions a:hover,
+    .modal-content .pdf-actions button:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .modal-content .pdf-actions .btn-download {
+      background: rgba(82,209,201,0.15);
+      border-color: var(--accent);
+    }
+    .modal-content .pdf-actions .btn-download:hover {
+      background: rgba(82,209,201,0.3);
+    }
+    .modal-content .pdf-error {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--accent-warm);
+    }
+    .modal-content .pdf-error i {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .modal-content .pdf-error p {
+      margin-bottom: 8px;
+    }
+    .modal-content .pdf-error .hint {
+      font-size: 0.85rem;
+      color: var(--text-faint);
+    }
+    /* Loading do PDF */
+    .modal-content .pdf-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 60px 0;
+      color: var(--text-muted);
+    }
+    .modal-content .pdf-loading i {
+      font-size: 2rem;
+      animation: spin 1s linear infinite;
+    }
     @media (max-width: 640px) {
       .modal-content { padding: 24px 20px; max-height: 90vh; }
       .modal-content .modal-title { font-size: 1.4rem; }
+      .modal-content .pdf-render { max-height: 50vh; padding: 10px; }
     }
 
     /* ============================================================
@@ -878,7 +978,7 @@
     <div class="section-head reveal">
       <span class="eyebrow">Trabalhos</span>
       <h2>Projetos desenvolvidos</h2>
-      <p>Alguns sistemas e páginas que desenvolvi do zero ou ajudei a evoluir.</p>
+      <p>Alguns sistemas e páginas que desenvolvi do zero ou ajudei a evoluir. A maior parte dos projetos se encontram no meu <a href="https://github.com/tavareesdev" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline; text-underline-offset: 2px; transition: opacity 0.3s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">GitHub</a>.</p>
     </div>
     <div class="project-grid reveal-stagger">
       <div class="project-card" data-project="portfolio">
@@ -888,13 +988,13 @@
           <h3>Meu Portfólio</h3>
           <div class="project-tags"><span>HTML</span><span>CSS</span><span>JavaScript</span></div>
           <div class="project-actions">
-            <a class="project-link" href="https://gtavares.site" target="_blank" rel="noopener">Visitar site <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <a class="project-link" href="https://tavareesdev.github.io/portfolio/" target="_blank" rel="noopener">Visitar site <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
             <button class="project-link-about" data-project="portfolio">Sobre <i class="fa-solid fa-book"></i></button>
           </div>
         </div>
       </div>
       <div class="project-card" data-project="zennix">
-        <span class="project-label-min">03</span>
+        <span class="project-label-min">02</span>
         <img src="images/zennix.png" alt="Captura de tela do sistema Zennix" loading="lazy">
         <div class="project-overlay">
           <h3>Zennix</h3>
@@ -905,11 +1005,42 @@
           </div>
         </div>
       </div>
+      <div class="project-card" data-project="crud-react">
+        <span class="project-label-min">03</span>
+        <img src="images/crud-react.png" alt="Crud React" loading="lazy">
+        <div class="project-overlay">
+          <h3>Crud React</h3>
+          <div class="project-tags">
+            <span>React</span>
+            <span>C# .NET</span>
+            <span>SQLite</span>
+          </div>
+          <div class="project-actions">
+            <button class="project-link-pdf" data-pdf="docs/projetos/crud-react.pdf">Visualizar PDF <i class="fa-solid fa-file-pdf"></i></button>
+            <button class="project-link-about" data-project="crud-react">Sobre <i class="fa-solid fa-book"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="project-card" data-project="siga">
+        <span class="project-label-min">04</span>
+        <img src="images/siga.png" alt="Siga" loading="lazy">
+        <div class="project-overlay">
+          <h3>Siga</h3>
+          <div class="project-tags">
+            <span>Java</span>
+            <span>Spring Boot</span>
+          </div>
+          <div class="project-actions">
+            <button class="project-link-pdf" data-pdf="docs/projetos/siga.pdf">Visualizar PDF <i class="fa-solid fa-file-pdf"></i></button>
+            <button class="project-link-about" data-project="siga">Sobre <i class="fa-solid fa-book"></i></button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ============ MODAL ============ -->
+<!-- ============ MODAL README ============ -->
 <div class="modal-overlay" id="project-modal">
   <div class="modal-content">
     <button class="modal-close" id="modal-close"><i class="fa-solid fa-xmark"></i></button>
@@ -918,6 +1049,34 @@
       <div class="loading">
         <i class="fa-solid fa-spinner"></i>
         <span>Carregando README...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL PDF ============ -->
+<div class="modal-overlay" id="pdf-modal">
+  <div class="modal-content">
+    <button class="modal-close" id="pdf-modal-close"><i class="fa-solid fa-xmark"></i></button>
+    <h2 class="modal-title" id="pdf-modal-title">📄 Visualizar PDF</h2>
+    <div class="modal-body" id="pdf-modal-body">
+      <div class="pdf-loading" id="pdf-loading">
+        <i class="fa-solid fa-spinner"></i>
+        <span>Carregando PDF...</span>
+      </div>
+      <div class="pdf-error" id="pdf-error">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <p>Não foi possível carregar o PDF.</p>
+        <p class="hint">Clique no botão "Abrir em nova aba" para visualizar diretamente.</p>
+      </div>
+      <div class="pdf-render" id="pdf-render"></div>
+      <div class="pdf-actions">
+        <a href="#" id="pdf-download-link" class="btn-download" download>
+          <i class="fa-solid fa-download"></i> Baixar PDF
+        </a>
+        <a href="#" id="pdf-open-link" target="_blank">
+          <i class="fa-solid fa-external-link-alt"></i> Abrir em nova aba
+        </a>
       </div>
     </div>
   </div>
@@ -1277,7 +1436,7 @@
     }
 
     /* ============================================================
-      MODAL — Carregar README.md de cada projeto via fetch
+      MODAL README — Carregar README.md de cada projeto via fetch
       ============================================================ */
     var modalOverlay = document.getElementById('project-modal');
     var modalTitle = document.getElementById('modal-title');
@@ -1286,7 +1445,6 @@
 
     // Cache para os READMEs já carregados (apenas na sessão atual)
     var readmeCache = {};
-    var cacheVersion = Date.now(); // Versão única para esta sessão
 
     // Função para carregar o README
     function loadReadme(projectId) {
@@ -1310,7 +1468,7 @@
 
       // Faz o fetch do arquivo .md com headers anti-cache
       fetch(url, {
-        cache: 'no-store', // Força o navegador a não usar cache
+        cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',
@@ -1324,7 +1482,6 @@
           return response.text();
         })
         .then(function(markdown) {
-          // Salva no cache da sessão
           readmeCache[projectId] = markdown;
           renderReadme(projectId, markdown);
         })
@@ -1337,9 +1494,6 @@
               <p style="font-size: 0.85rem; color: var(--text-faint); margin-top: 8px;">
                 Verifique se o arquivo <code>docs/readmes/${projectId}.md</code> existe.
               </p>
-              <button onclick="location.reload()" style="margin-top: 16px; padding: 8px 20px; border-radius: 999px; border: 1px solid var(--accent); background: transparent; color: var(--accent); cursor: pointer;">
-                <i class="fa-solid fa-rotate"></i> Recarregar página
-              </button>
             </div>
           `;
         });
@@ -1347,74 +1501,14 @@
 
     // Função para renderizar o Markdown
     function renderReadme(projectId, markdown) {
-      // Define o título baseado no projeto
-      var titles = {
-        portfolio: '📖 Meu Portfólio',
-        sejanow: '📖 Seja Now — Home Page',
-        zennix: '📖 Zennix'
-      };
-      modalTitle.textContent = titles[projectId] || '📖 Sobre o Projeto';
-
-      try {
-        // Configura o marked para ser seguro
-        var html = marked.parse(markdown);
-        modalBody.innerHTML = html;
-      } catch (e) {
-        console.error('Erro ao renderizar Markdown:', e);
-        modalBody.innerHTML = '<p style="color: var(--accent-warm);">Erro ao renderizar o conteúdo. Por favor, tente novamente.</p>';
-      }
-    }
-
-    // Abrir modal
-    function openModal(projectId) {
-      modalOverlay.classList.add('active');
-      document.body.style.overflow = 'hidden';
-      loadReadme(projectId);
-    }
-
-    // Fechar modal
-    function closeModal() {
-      modalOverlay.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-
-    // Event listeners para botões "Sobre"
-    document.querySelectorAll('.project-link-about').forEach(function(btn) {
-      btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        var project = this.getAttribute('data-project');
-        openModal(project);
-      });
-    });
-
-    // Fechar modal com o X
-    modalClose.addEventListener('click', closeModal);
-
-    // Fechar modal clicando fora do conteúdo
-    modalOverlay.addEventListener('click', function(e) {
-      if (e.target === modalOverlay) {
-        closeModal();
-      }
-    });
-
-    // Fechar modal com a tecla ESC
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
-        closeModal();
-      }
-    });
-
-    // Função para renderizar o Markdown
-    function renderReadme(projectId, markdown) {
-      // Define o título baseado no projeto
       var titles = {
         portfolio: 'Meu Portfólio',
-        zennix: 'Zennix'
+        zennix: 'Zennix',
+        'crud-react': 'CRUD React'
       };
       modalTitle.textContent = titles[projectId] || 'Sobre o Projeto';
 
       try {
-        // Configura o marked para ser seguro
         var html = marked.parse(markdown);
         modalBody.innerHTML = html;
       } catch (e) {
@@ -1423,14 +1517,14 @@
       }
     }
 
-    // Abrir modal
+    // Abrir modal README
     function openModal(projectId) {
       modalOverlay.classList.add('active');
       document.body.style.overflow = 'hidden';
       loadReadme(projectId);
     }
 
-    // Fechar modal
+    // Fechar modal README
     function closeModal() {
       modalOverlay.classList.remove('active');
       document.body.style.overflow = '';
@@ -1445,20 +1539,148 @@
       });
     });
 
-    // Fechar modal com o X
+    // Fechar modal README com o X
     modalClose.addEventListener('click', closeModal);
 
-    // Fechar modal clicando fora do conteúdo
+    // Fechar modal README clicando fora
     modalOverlay.addEventListener('click', function(e) {
       if (e.target === modalOverlay) {
         closeModal();
       }
     });
 
-    // Fechar modal com a tecla ESC
+    // Fechar modal README com ESC
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
         closeModal();
+      }
+    });
+
+    /* ============================================================
+      MODAL PDF — Visualizar PDF com PDF.js
+      ============================================================ */
+    var pdfModal = document.getElementById('pdf-modal');
+    var pdfModalClose = document.getElementById('pdf-modal-close');
+    var pdfRender = document.getElementById('pdf-render');
+    var pdfLoading = document.getElementById('pdf-loading');
+    var pdfError = document.getElementById('pdf-error');
+    var pdfDownloadLink = document.getElementById('pdf-download-link');
+    var pdfOpenLink = document.getElementById('pdf-open-link');
+    var pdfModalTitle = document.getElementById('pdf-modal-title');
+
+    // Configurar o worker do PDF.js
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    function renderPdf(pdfUrl) {
+      // Mostra loading, esconde erro e render
+      pdfLoading.style.display = 'flex';
+      pdfError.style.display = 'none';
+      pdfRender.innerHTML = '';
+
+      // Configura os links
+      pdfDownloadLink.href = pdfUrl;
+      pdfOpenLink.href = pdfUrl;
+
+      // Extrai o nome do arquivo
+      var fileName = pdfUrl.split('/').pop();
+      pdfModalTitle.textContent = '📄 ' + fileName;
+
+      // Carrega o PDF
+      pdfjsLib.getDocument(pdfUrl).promise
+        .then(function(pdf) {
+          pdfLoading.style.display = 'none';
+          
+          // Renderiza todas as páginas
+          var totalPages = pdf.numPages;
+          var renderPromises = [];
+
+          for (var pageNum = 1; pageNum <= totalPages; pageNum++) {
+            renderPromises.push(
+              pdf.getPage(pageNum).then(function(page) {
+                var scale = 1.2;
+                var viewport = page.getViewport({ scale: scale });
+                
+                // Cria container para a página
+                var pageContainer = document.createElement('div');
+                pageContainer.className = 'pdf-page';
+                
+                // Cria canvas
+                var canvas = document.createElement('canvas');
+                var context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                
+                pageContainer.appendChild(canvas);
+                pdfRender.appendChild(pageContainer);
+                
+                // Renderiza a página
+                var renderContext = {
+                  canvasContext: context,
+                  viewport: viewport
+                };
+                return page.render(renderContext).promise;
+              })
+            );
+          }
+
+          // Aguarda todas as páginas renderizarem
+          return Promise.all(renderPromises);
+        })
+        .then(function() {
+          pdfLoading.style.display = 'none';
+        })
+        .catch(function(error) {
+          console.error('Erro ao carregar PDF:', error);
+          pdfLoading.style.display = 'none';
+          pdfError.style.display = 'block';
+          pdfRender.innerHTML = '';
+        });
+    }
+
+    function openPdfModal(pdfPath) {
+      // Abre a modal
+      pdfModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      
+      // Renderiza o PDF
+      renderPdf(pdfPath);
+    }
+
+    function closePdfModal() {
+      pdfModal.classList.remove('active');
+      document.body.style.overflow = '';
+      // Limpa o render
+      setTimeout(function() {
+        pdfRender.innerHTML = '';
+        pdfLoading.style.display = 'flex';
+        pdfError.style.display = 'none';
+      }, 300);
+    }
+
+    // Event listeners para botões "Visualizar PDF"
+    document.querySelectorAll('.project-link-pdf').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var pdfPath = this.getAttribute('data-pdf');
+        openPdfModal(pdfPath);
+      });
+    });
+
+    // Fechar modal PDF com o X
+    pdfModalClose.addEventListener('click', closePdfModal);
+
+    // Fechar modal PDF clicando fora
+    pdfModal.addEventListener('click', function(e) {
+      if (e.target === pdfModal) {
+        closePdfModal();
+      }
+    });
+
+    // Fechar modal PDF com ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && pdfModal.classList.contains('active')) {
+        closePdfModal();
       }
     });
 
