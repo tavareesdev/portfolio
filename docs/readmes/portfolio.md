@@ -67,14 +67,11 @@ cd portfolio
 
 ```
 portfolio/
-├── index.html          # Página principal
-├── retrato.jpg         # Foto de perfil
-├── logo.png           # Logo do site
-├── CV Gabriel Tavares 2026.pdf  # Currículo para download
-└── assets/            # Imagens dos projetos
-    ├── portfolio.png
-    ├── sejanow.png
-    └── zennix.png
+├───docs                # Documentos
+│   └───readmes         # Documentação dos projetos
+├───images              # Imagens dos projetos
+└───index.html          # Página principal
+
 ```
 
 ## Otimizações Implementadas
