@@ -1,0 +1,82 @@
+# Avaliador de Currículo com IA
+
+App em Next.js que avalia um currículo simulando um **ATS** e um **recrutador humano**,
+e opcionalmente adapta a análise a uma **vaga específica** (o usuário cola a descrição
+da vaga e a IA compara palavras-chave, requisitos, etc.).
+
+100% gratuito para rodar: hospedagem na Vercel (free tier) + IA via Google Gemini
+(free tier, modelos Flash, sem cartão de crédito).
+
+## 1. Rodando localmente
+
+```bash
+npm install
+cp .env.example .env.local
+```
+
+Edite `.env.local` e coloque sua chave do Gemini:
+
+```
+GEMINI_API_KEY=sua_chave_aqui
+```
+
+Como conseguir a chave gratuita:
+1. Acesse https://aistudio.google.com/apikey
+2. Faça login com uma conta Google
+3. Clique em "Create API key" — não pede cartão de crédito
+4. Cole a chave no `.env.local`
+
+Depois:
+
+```bash
+npm run dev
+```
+
+Abra http://localhost:3000
+
+## 2. Colocando no ar de graça (Vercel)
+
+1. Suba este projeto para um repositório no GitHub (pode ser público ou privado)
+2. Crie uma conta em https://vercel.com (dá pra logar com GitHub)
+3. Clique em "Add New Project", selecione o repositório
+4. Em "Environment Variables", adicione `GEMINI_API_KEY` com sua chave
+5. Deploy — em ~1 minuto o site está no ar, com URL gratuita (`seu-projeto.vercel.app`)
+
+O plano gratuito da Vercel é mais que suficiente para uso pessoal ou baixo volume
+de usuários.
+
+## 3. Limites do plano gratuito do Gemini (a saber)
+
+- Só os modelos **Flash / Flash-Lite** são gratuitos (Pro deixou de ser gratuito
+  em abril/2026)
+- Limite de requisições por dia e por minuto — para um site pessoal/portfólio
+  costuma ser suficiente, mas para tráfego alto você vai precisar migrar para o
+  tier pago (bem barato: Flash-Lite custa centavos por 1M de tokens)
+- Verifique os limites atualizados e os nomes de modelo disponíveis no seu
+  projeto em https://aistudio.google.com — eles mudam com frequência. O código
+  usa `gemini-2.5-flash`; se esse nome não existir mais na sua conta, troque em
+  `app/api/analyze/route.ts` (constante `GEMINI_MODEL`).
+- No tier gratuito, o Google pode usar os dados enviados para melhorar produtos.
+  Se isso for um problema (dados de currículos de terceiros), considere avisar
+  os usuários no site ou migrar para o tier pago.
+
+## 4. Estrutura do projeto
+
+```
+app/
+  page.tsx              → interface (upload + campo de vaga + resultados)
+  api/analyze/route.ts   → endpoint que extrai o texto e chama o Gemini
+  layout.tsx, globals.css
+lib/
+  parseFile.ts           → extração de texto de PDF/DOCX
+  prompts.ts              → prompt enviado à IA (persona ATS + recrutador)
+```
+
+## 5. Próximos passos sugeridos
+
+- Adicionar limite de tamanho de arquivo (ex: 5MB) para evitar abuso
+- Adicionar rate limiting por IP (ex: Upstash Redis, tem free tier) para não
+  estourar a cota gratuita do Gemini com poucos usuários mal-intencionados
+- Guardar histórico de análises (precisaria de um banco — ex: Supabase, que
+  também tem free tier generoso)
+- Melhorar o prompt com exemplos (few-shot) para respostas mais consistentes
